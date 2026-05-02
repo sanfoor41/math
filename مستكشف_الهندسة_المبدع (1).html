@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>مستكشف الهندسة المبدع</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d0d0d;--card:#141414;--border:#2e2e2e;
+  --teal:#1a7a68;--teal2:#0f5447;--green:#2e7d52;
+  --gold:#c9973a;--goldl:#e8bf70;
+  --text:#e8e0d0;--muted:#888;
+  --inp:#f7f5f0;--inpt:#111;
+}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:'Tajawal',sans-serif;
+  min-height:100vh;display:flex;flex-direction:column;
+  align-items:center;padding:28px 16px 72px;
+  overflow-x:hidden;
+}
+.wrap{width:100%;max-width:620px;display:flex;flex-direction:column;align-items:center;gap:22px}
+
+/* Badge */
+.badge{
+  border:1.5px solid var(--teal);border-radius:60px;
+  padding:9px 30px;text-align:center;color:var(--teal);
+  font-size:13px;line-height:1.7;background:rgba(26,122,104,.08);
+  animation:fd .6s ease both;
+}
+
+/* Title */
+.title{
+  font-size:clamp(2rem,8vw,3.2rem);font-weight:800;
+  color:var(--teal);text-align:center;line-height:1.2;
+  animation:fd .7s .1s ease both;
+}
+.subtitle{font-size:14px;color:var(--muted);text-align:center;animation:fd .7s .2s ease both}
+
+/* Shapes */
+.shapes{
+  display:flex;align-items:center;justify-content:center;
+  gap:14px;flex-wrap:wrap;animation:fd .7s .3s ease both;
+}
+.shape{width:62px;height:62px;display:flex;align-items:center;justify-content:center;border-radius:14px;cursor:default;transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+.shape:hover{transform:translateY(-6px) scale(1.1)}
+.shape svg{width:50px;height:50px}
+
+/* Input */
+.inp-wrap{width:100%;animation:fu .7s .4s ease both}
+.inp-label{display:block;text-align:right;font-size:15px;color:var(--text);margin-bottom:10px}
+.inp{
+  width:100%;background:var(--inp);border:2px solid transparent;
+  border-radius:14px;padding:18px 22px;
+  font-size:16px;font-family:'Tajawal',sans-serif;
+  color:var(--inpt);text-align:right;outline:none;direction:rtl;
+  box-shadow:0 2px 20px rgba(0,0,0,.35);transition:border .2s,box-shadow .2s;
+}
+.inp:focus{border-color:var(--teal);box-shadow:0 2px 28px rgba(26,122,104,.3)}
+.inp.err{border-color:#c0392b !important;box-shadow:0 0 0 3px rgba(192,57,43,.2) !important}
+.inp::placeholder{color:#aaa}
+.err-msg{display:none;color:#e07070;font-size:13px;text-align:right;margin-top:6px}
+.err-msg.show{display:block}
+
+/* Divider */
+.divider{display:flex;align-items:center;gap:14px;width:100%;animation:fu .7s .5s ease both}
+.dline{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent)}
+.dtxt{font-size:12px;color:var(--muted);white-space:nowrap}
+
+/* Start Button */
+.start-btn{
+  width:100%;background:linear-gradient(135deg,var(--green),var(--teal));
+  color:#fff;border:none;border-radius:14px;padding:18px;
+  font-size:17px;font-family:'Tajawal',sans-serif;font-weight:700;
+  cursor:pointer;box-shadow:0 4px 24px rgba(26,122,104,.4);
+  transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s;
+  animation:fu .7s .55s ease both;
+}
+.start-btn:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(26,122,104,.55)}
+.start-btn:active{transform:scale(.97)}
+
+.sparkle{font-size:22px;animation:pulse 2.5s ease-in-out infinite,fu .7s .6s ease both}
+.supervisors{font-size:13px;color:var(--muted);text-align:center;line-height:1.9;animation:fu .7s .65s ease both}
+
+/* === QUIZ === */
+#quiz-screen{display:none;width:100%}
+.qhdr{text-align:center;margin-bottom:20px}
+.qhdr h2{font-size:1.4rem;font-weight:700;color:var(--goldl)}
+.qhdr p{font-size:13px;color:var(--muted);margin-top:4px}
+
+.prog-wrap{width:100%;height:7px;background:var(--border);border-radius:99px;margin-bottom:26px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--teal));border-radius:99px;transition:width .45s ease}
+
+.qcard{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:28px 22px;margin-bottom:18px}
+.qtxt{font-size:17px;font-weight:700;text-align:right;margin-bottom:22px;line-height:1.7;color:var(--text)}
+
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cbtn{
+  background:#1a1a1a;border:1.5px solid var(--border);border-radius:12px;
+  padding:16px 12px;font-size:14px;font-family:'Tajawal',sans-serif;
+  color:var(--text);text-align:center;cursor:pointer;line-height:1.5;
+  transition:border-color .2s,background .2s,transform .15s;
+}
+.cbtn:hover:not(:disabled){border-color:var(--teal);background:rgba(26,122,104,.15);transform:translateY(-2px)}
+.cbtn:disabled{cursor:default}
+.cbtn.correct{background:rgba(46,125,82,.25);border-color:#2e7d52;color:#7ecfa0}
+.cbtn.wrong{background:rgba(180,40,40,.2);border-color:#b42828;color:#e07070}
+
+.feedback{border-radius:12px;padding:14px 18px;font-size:14px;text-align:right;line-height:1.7;margin-top:16px;display:none}
+.feedback.show{display:block}
+.feedback.ok{background:rgba(46,125,82,.15);border:1px solid #2e7d52;color:#7ecfa0}
+.feedback.bad{background:rgba(180,40,40,.12);border:1px solid #b42828;color:#e07070}
+
+.next-btn{
+  width:100%;background:linear-gradient(135deg,var(--green),var(--teal));
+  color:#fff;border:none;border-radius:12px;padding:16px;
+  font-size:15px;font-family:'Tajawal',sans-serif;font-weight:700;
+  cursor:pointer;margin-top:14px;display:none;
+  transition:transform .2s,box-shadow .2s;
+  box-shadow:0 3px 16px rgba(26,122,104,.35);
+}
+.next-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(26,122,104,.5)}
+
+/* === RESULT === */
+#result-screen{display:none;width:100%}
+.rcard{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:44px 28px;text-align:center}
+.remo{font-size:56px;margin-bottom:10px;animation:pop .5s cubic-bezier(.34,1.56,.64,1) both}
+.rname{font-size:22px;font-weight:700;color:var(--goldl);margin-bottom:6px}
+.rscore{font-size:46px;font-weight:800;color:var(--teal);margin:14px 0}
+.rscore span{font-size:18px;color:var(--muted);font-weight:400}
+.rmsg{font-size:15px;color:var(--muted);line-height:1.85;margin-bottom:28px}
+.stars{font-size:24px;letter-spacing:4px;margin-bottom:18px}
+
+.restart-btn{
+  background:transparent;border:1.5px solid var(--teal);color:var(--teal);
+  border-radius:12px;padding:14px 36px;
+  font-size:15px;font-family:'Tajawal',sans-serif;font-weight:700;
+  cursor:pointer;transition:all .2s;
+}
+.restart-btn:hover{background:var(--teal);color:#fff}
+
+@keyframes fd{from{opacity:0;transform:translateY(-18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fu{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
+@keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- WELCOME -->
+<div id="welcome-screen" style="width:100%;display:flex;flex-direction:column;align-items:center;gap:22px">
+
+  <div class="badge">وزارة التربية والتعليم<br/>AE</div>
+
+  <h1 class="title">مستكشف الهندسة المبدع</h1>
+  <p class="subtitle">مجمع محمد بن زايد التعليمي — مدينة محمد بن زايد</p>
+
+  <div class="shapes">
+    <div class="shape"><svg viewBox="0 0 50 50"><rect x="5" y="5" width="40" height="40" fill="#2e7d32" rx="5"/></svg></div>
+    <div class="shape"><svg viewBox="0 0 50 50"><polygon points="25,4 47,46 3,46" fill="#8b1a1a"/></svg></div>
+    <div class="shape"><svg viewBox="0 0 50 50"><polygon points="25,3 45,14 45,36 25,47 5,36 5,14" fill="#546e7a"/></svg></div>
+    <div class="shape"><svg viewBox="0 0 50 50"><polygon points="25,3 31,19 47,19 34,29 39,46 25,36 11,46 16,29 3,19 19,19" fill="#1565c0"/></svg></div>
+    <div class="shape"><svg viewBox="0 0 50 50"><polygon points="25,3 45,14 45,36 25,47 5,36 5,14" fill="#1a7a68"/></svg></div>
+  </div>
+
+  <div class="inp-wrap">
+    <label class="inp-label" for="studentName">أدخل اسمك الثلاثي :</label>
+    <input class="inp" type="text" id="studentName"
+           placeholder="الاسم الثلاثي..."
+           dir="rtl"
+           autocomplete="off"/>
+    <p class="err-msg" id="errMsg">&#9888; الرجاء إدخال اسمك الثلاثي أولاً</p>
+  </div>
+
+  <div class="divider">
+    <div class="dline"></div>
+    <span class="dtxt">ابدأ رحلة الاستكشاف</span>
+    <div class="dline"></div>
+  </div>
+
+  <button class="start-btn" id="startBtn">&#10022; ابدأ الرحلة التعليمية &#10022;</button>
+
+  <div class="sparkle">&#10022;</div>
+  <p class="supervisors">بإشراف المعلمات المبدعات<br/>أ. شيخة السحابي &amp; أ. علياء الحفيتي</p>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz-screen">
+  <div class="qhdr">
+    <h2 id="qname"></h2>
+    <p id="qprog"></p>
+  </div>
+  <div class="prog-wrap"><div class="prog-fill" id="progBar"></div></div>
+  <div class="qcard">
+    <p class="qtxt" id="qtxt"></p>
+    <div class="choices" id="choicesGrid"></div>
+    <div class="feedback" id="feedbackBox"></div>
+    <button class="next-btn" id="nextBtn">السؤال التالي &#8592;</button>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div id="result-screen">
+  <div class="rcard">
+    <div class="remo" id="remo">&#127942;</div>
+    <div class="rname" id="rname"></div>
+    <div class="stars" id="rstars"></div>
+    <div class="rscore" id="rscore"></div>
+    <div class="rmsg" id="rmsg"></div>
+    <button class="restart-btn" id="restartBtn">&#8634; ابدأ من جديد</button>
+  </div>
+</div>
+
+</div>
+
+<script>
+var questions = [
+  {q:"كم عدد أضلاع المثلث؟",c:["٢ أضلاع","٣ أضلاع","٤ أضلاع","٥ أضلاع"],a:1,ex:"المثلث له ٣ أضلاع و٣ زوايا، وهو أبسط الأشكال الهندسية المغلقة."},
+  {q:"ما اسم الشكل الذي له ٦ أضلاع متساوية؟",c:["المربع","المستطيل","السداسي المنتظم","المعين"],a:2,ex:"السداسي المنتظم (الهكساغون) له ٦ أضلاع و٦ زوايا متساوية."},
+  {q:"ما عدد محاور التماثل في المربع؟",c:["٢ محاور","٣ محاور","٤ محاور","٦ محاور"],a:2,ex:"للمربع ٤ محاور تماثل: محوران عبر منتصفَي الأضلاع ومحوران قطريّان."},
+  {q:"أي الأشكال التالية ليس له زوايا على الإطلاق؟",c:["المثلث","الدائرة","المستطيل","المعين"],a:1,ex:"الدائرة شكل مستدير لا زوايا فيه ولا أضلاع مستقيمة."},
+  {q:"الشكل الذي له أربعة أضلاع متساوية وأربع زوايا قائمة هو:",c:["المعين","متوازي الأضلاع","المربع","المستطيل"],a:2,ex:"المربع له ٤ أضلاع متساوية وزوايا قائمة (٩٠°) في كل ركن."},
+  {q:"كم عدد زوايا الشكل الخماسي المنتظم؟",c:["٣ زوايا","٤ زوايا","٥ زوايا","٦ زوايا"],a:2,ex:"الخماسي (البنتاغون) له ٥ أضلاع و٥ زوايا، ومجموعها ٥٤٠ درجة."},
+  {q:"ما مجموع زوايا المثلث؟",c:["٩٠ درجة","١٨٠ درجة","٢٧٠ درجة","٣٦٠ درجة"],a:1,ex:"مجموع زوايا أي مثلث يساوي دائماً ١٨٠ درجة."},
+  {q:"الشكل الرباعي الذي أضلاعه المتقابلة متساوية وكل زواياه قائمة هو:",c:["المعين","المربع","المستطيل","متوازي الأضلاع"],a:2,ex:"المستطيل له زوايا قائمة وأضلاعه المتقابلة متساوية وموازية."}
+];
+
+var idx=0, score=0, name="", answered=false;
+
+function gel(id){return document.getElementById(id);}
+
+function clearErr(){
+  gel('studentName').classList.remove('err');
+  gel('errMsg').classList.remove('show');
+}
+
+function startQuiz(){
+  var v = gel('studentName').value.trim();
+  if(!v){
+    gel('studentName').classList.add('err');
+    gel('errMsg').classList.add('show');
+    gel('studentName').focus();
+    return;
+  }
+  name=v; idx=0; score=0;
+  gel('welcome-screen').style.display='none';
+  gel('quiz-screen').style.display='block';
+  loadQ();
+}
+
+function loadQ(){
+  answered=false;
+  var q=questions[idx];
+  gel('qname').textContent='مرحباً، '+name+' 👋';
+  gel('qprog').textContent='السؤال '+(idx+1)+' من '+questions.length;
+  gel('progBar').style.width=((idx/questions.length)*100)+'%';
+  gel('qtxt').textContent=q.q;
+
+  var grid=gel('choicesGrid');
+  grid.innerHTML='';
+  for(var i=0;i<q.c.length;i++){
+    (function(ci){
+      var b=document.createElement('button');
+      b.className='cbtn';
+      b.textContent=q.c[ci];
+      b.type='button';
+      b.addEventListener('click',function(){pick(ci);});
+      grid.appendChild(b);
+    })(i);
+  }
+
+  var fb=gel('feedbackBox');
+  fb.className='feedback';
+  fb.textContent='';
+  gel('nextBtn').style.display='none';
+  gel('nextBtn').textContent=idx===questions.length-1?'عرض النتيجة 🏆':'السؤال التالي ←';
+}
+
+function pick(i){
+  if(answered)return;
+  answered=true;
+  var q=questions[idx];
+  var btns=document.querySelectorAll('.cbtn');
+  for(var n=0;n<btns.length;n++){
+    btns[n].disabled=true;
+    if(n===q.a) btns[n].classList.add('correct');
+    else if(n===i) btns[n].classList.add('wrong');
+  }
+  var fb=gel('feedbackBox');
+  if(i===q.a){
+    score++;
+    fb.className='feedback ok show';
+    fb.textContent='✓ إجابة صحيحة! '+q.ex;
+  } else {
+    fb.className='feedback bad show';
+    fb.textContent='✗ إجابة خاطئة. '+q.ex;
+  }
+  gel('nextBtn').style.display='block';
+}
+
+function nextQ(){
+  idx++;
+  if(idx>=questions.length) showResult();
+  else loadQ();
+}
+
+function showResult(){
+  gel('quiz-screen').style.display='none';
+  gel('result-screen').style.display='block';
+  gel('progBar').style.width='100%';
+  var pct=Math.round((score/questions.length)*100);
+  var emo,msg,stars;
+  if(pct===100){emo='🏆';stars='⭐⭐⭐⭐⭐';msg='ممتاز جداً! أنتَ مستكشف هندسة متميّز، أجبتَ على جميع الأسئلة بشكل صحيح!';}
+  else if(pct>=75){emo='🎉';stars='⭐⭐⭐⭐';msg='أحسنتَ! لديكَ فهم ممتاز للأشكال الهندسية، واصل التعلم!';}
+  else if(pct>=50){emo='💪';stars='⭐⭐⭐';msg='جيد! حاول مراجعة خصائص الأشكال الهندسية للحصول على نتيجة أفضل.';}
+  else{emo='📚';stars='⭐⭐';msg='واصل الدراسة والمحاولة! كل خطأ هو فرصة رائعة للتعلم والتحسين.';}
+  gel('remo').textContent=emo;
+  gel('rname').textContent=name;
+  gel('rstars').textContent=stars;
+  gel('rscore').innerHTML=score+'<span> / '+questions.length+' ('+pct+'%)</span>';
+  gel('rmsg').textContent=msg;
+}
+
+function restart(){
+  gel('result-screen').style.display='none';
+  gel('welcome-screen').style.display='flex';
+  gel('studentName').value='';
+  clearErr();
+}
+
+// Wire up buttons safely after DOM loads
+window.addEventListener('DOMContentLoaded', function(){
+  gel('startBtn').addEventListener('click', startQuiz);
+  gel('nextBtn').addEventListener('click', nextQ);
+  gel('restartBtn').addEventListener('click', restart);
+  gel('studentName').addEventListener('input', clearErr);
+  gel('studentName').addEventListener('keydown', function(e){
+    if(e.key==='Enter') startQuiz();
+  });
+});
+</script>
+</body>
+</html>
